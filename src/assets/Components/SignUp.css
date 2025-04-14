@@ -1,0 +1,132 @@
+.container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .container img {
+    object-fit: cover;
+    z-index: 0;
+  }
+  .signUp .header{
+    text-align: center;
+    
+  }
+  .signUp h3 {
+    margin-bottom: 20px;
+  }
+  .signUp {
+    flex: 1;
+    background-color: white;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    z-index: 1;
+
+
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+
+  }
+  form label {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #9794AA;
+ 
+  }
+  form input {
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #CBCAD7;
+    width: 528px;
+    color: #686677;
+  }
+  .signUp p{
+    margin: auto;
+  }
+  button {
+    margin-top: 20px;
+    padding: 12px;
+    background-color: #6938EF;
+    border: none;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  button:hover {
+    background-color: black;
+  }
+  
+  
+  
+
+  
+  /* 
+  
+  Right form section
+  .signUp {
+    flex: 1;
+    background-color: white;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 100%;
+  }
+  
+
+  .signUp h3 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  form label {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #7E7E7E;
+  }
+  
+  form input {
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 100%;
+  }
+  
+  button {
+    margin-top: 20px;
+    padding: 12px;
+    background-color: #6938EF;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  button:hover {
+    background-color: black;
+  }
+  
+  p {
+    text-align: center;
+    margin-top: 20px;
+  } */
+  
