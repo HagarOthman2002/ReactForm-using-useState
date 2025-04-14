@@ -1,7 +1,8 @@
 import backgroundImg from "../Public/background.png";
 import Logo from "../Public/Logo.png";
 import "./SignUp.css";
-import { useState, useCallback } from "react";
+
+import { useState } from "react";
 
 export default function SignUp() {
   const [values, setValues] = useState({
@@ -26,29 +27,29 @@ export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const validateEmail = useCallback((email) => {
+  const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
-  }, []);
+  };
 
-  const validatePhone = useCallback((phone) => {
+  const validatePhone = (phone) => {
     const re = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
     return re.test(phone);
-  }, []);
+  };
 
-  const validatePassword = useCallback((password) => {
+  const validatePassword = (password) => {
     return /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(password);
-  }, []);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setValues({
-      ...values,
+    setValues((prevValues) => ({
+      ...prevValues,
       [name]: value,
-    });
-    // Clear error when user types
+    }));
+
     if (errors[name]) {
-      setErrors({ ...errors, [name]: "" });
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
     }
   };
 
@@ -64,9 +65,8 @@ export default function SignUp() {
 
   const validateForm = () => {
     let isValid = true;
-    const newErrors = { ...errors };
+    const newErrors = {};
 
-    // Email validation
     if (!values.email) {
       newErrors.email = "Email is required";
       isValid = false;
@@ -75,7 +75,6 @@ export default function SignUp() {
       isValid = false;
     }
 
-    // Name validation (minimum 3 characters)
     if (!values.name) {
       newErrors.name = "Name is required";
       isValid = false;
@@ -84,13 +83,14 @@ export default function SignUp() {
       isValid = false;
     }
 
-    // Phone validation
-    if (values.phone && !validatePhone(values.phone)) {
+    if (!values.phone) {
+      newErrors.phone = "Phone number is required";
+      isValid = false;
+    } else if (!validatePhone(values.phone)) {
       newErrors.phone = "Please enter a valid phone number";
       isValid = false;
     }
 
-    // Age validation (at least 13 years old)
     if (!values.birthday) {
       newErrors.birthday = "Birthday is required";
       isValid = false;
@@ -99,7 +99,7 @@ export default function SignUp() {
       const today = new Date();
       let age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
-      
+
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
         age--;
       }
@@ -110,16 +110,15 @@ export default function SignUp() {
       }
     }
 
-    // Password validation
     if (!values.password) {
       newErrors.password = "Password is required";
       isValid = false;
     } else if (!validatePassword(values.password)) {
-      newErrors.password = "Password must contain at least 8 characters, including one number, one uppercase and one lowercase letter";
+      newErrors.password =
+        "Password must contain at least 8 characters, including one number, one uppercase and one lowercase letter";
       isValid = false;
     }
 
-    // Password match validation
     if (!values.confirmPassword) {
       newErrors.confirmPassword = "Please confirm your password";
       isValid = false;
@@ -135,21 +134,19 @@ export default function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     if (validateForm()) {
       console.log("Form is valid. Submitted values:", {
         ...values,
-        password: "***", // Don't log actual password
-        confirmPassword: "***"
+        password: "***",
+        confirmPassword: "***",
       });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       setIsSubmitted(true);
       setIsLoading(false);
-      
-      // Clear form after successful validation
+
       setValues({
         email: "",
         name: "",
@@ -159,7 +156,6 @@ export default function SignUp() {
         confirmPassword: "",
       });
 
-      // Reset submission status after 3 seconds
       setTimeout(() => setIsSubmitted(false), 3000);
     } else {
       setIsLoading(false);
@@ -167,17 +163,13 @@ export default function SignUp() {
   };
 
   const passwordStrength = calculatePasswordStrength(values.password);
-  const passwordStrengthText = [
-    "Very Weak",
-    "Weak",
-    "Medium",
-    "Strong",
-    "Very Strong"
-  ][Math.min(passwordStrength, 4)];
+  const passwordStrengthText = ["Very Weak", "Weak", "Medium", "Strong", "Very Strong"][Math.min(passwordStrength, 4)];
 
   return (
     <div className="container">
-      <img  src={backgroundImg} alt="background" className="background-image" />
+      <div className="background-image">
+        <img src={backgroundImg} alt="background Image" />
+      </div>
 
       <div className="signUp">
         <div className="header">
@@ -185,13 +177,10 @@ export default function SignUp() {
           <h3>Create an account</h3>
         </div>
 
-        {isSubmitted && (
-          <div className="success-message" aria-live="polite">
-            Account created successfully! (simulated)
-          </div>
-        )}
+        {isSubmitted && <div className="success-message">Account created successfully!</div>}
 
         <form onSubmit={handleSubmit} noValidate>
+          {/* Email */}
           <label htmlFor="Email">Email Address</label>
           <input
             type="email"
@@ -202,11 +191,11 @@ export default function SignUp() {
             placeholder="Enter your email address..."
             className={errors.email ? "error-input" : ""}
             aria-invalid={!!errors.email}
-            aria-describedby={errors.email ? "emailError" : undefined}
             required
           />
-          {errors.email && <span id="emailError" className="error" aria-live="polite">{errors.email}</span>}
+          {errors.email && <span className="error">{errors.email}</span>}
 
+          {/* Name */}
           <label htmlFor="Name">Full Name</label>
           <input
             type="text"
@@ -216,13 +205,12 @@ export default function SignUp() {
             onChange={handleChange}
             placeholder="Enter Your Full Name"
             className={errors.name ? "error-input" : ""}
-            aria-invalid={!!errors.name}
-            aria-describedby={errors.name ? "nameError" : undefined}
             required
           />
-          {errors.name && <span id="nameError" className="error" aria-live="polite">{errors.name}</span>}
+          {errors.name && <span className="error">{errors.name}</span>}
 
-          <label htmlFor="phone">Phone Number (Optional)</label>
+          {/* Phone */}
+          <label htmlFor="phone">Phone Number </label>
           <input
             type="tel"
             name="phone"
@@ -231,11 +219,11 @@ export default function SignUp() {
             onChange={handleChange}
             placeholder="Enter Your phone Number"
             className={errors.phone ? "error-input" : ""}
-            aria-invalid={!!errors.phone}
-            aria-describedby={errors.phone ? "phoneError" : undefined}
+            required
           />
-          {errors.phone && <span id="phoneError" className="error" aria-live="polite">{errors.phone}</span>}
+          {errors.phone && <span className="error">{errors.phone}</span>}
 
+          {/* Birthday */}
           <label htmlFor="BD">Birthday</label>
           <input
             type="date"
@@ -244,70 +232,61 @@ export default function SignUp() {
             value={values.birthday}
             onChange={handleChange}
             className={errors.birthday ? "error-input" : ""}
-            aria-invalid={!!errors.birthday}
-            aria-describedby={errors.birthday ? "birthdayError" : undefined}
             required
           />
-          {errors.birthday && <span id="birthdayError" className="error" aria-live="polite">{errors.birthday}</span>}
+          {errors.birthday && <span className="error">{errors.birthday}</span>}
 
+          {/* Password */}
           <label htmlFor="pass">Password</label>
-          <div className="password-input-container">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              id="pass"
-              value={values.password}
-              onChange={handleChange}
-              placeholder="Enter Your Password"
-              className={errors.password ? "error-input" : ""}
-              aria-invalid={!!errors.password}
-              aria-describedby={errors.password ? "passwordError" : undefined}
-              required
-            />
-            <button 
-              type="button" 
-              className="show-password-button"
-              onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </button>
-          </div>
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            id="pass"
+            value={values.password}
+            onChange={handleChange}
+            placeholder="Enter Your Password"
+            className={`password-input-with-bg ${errors.password ? "error-input" : ""}`}
+            required
+            onClick={(e) => {
+              const target = e.target;
+              const iconClicked = e.nativeEvent.offsetX > target.offsetWidth - 30;
+              if (iconClicked) setShowPassword(!showPassword);
+            }}
+          />
           {values.password && (
             <div className="password-strength">
               <span>Strength: {passwordStrengthText}</span>
               <div className="strength-meter">
                 {[...Array(4)].map((_, i) => (
-                  <div 
-                    key={i} 
-                    className={`strength-bar ${i < passwordStrength ? "filled" : ""}`}
-                  />
+                  <div key={i} className={`strength-bar ${i < passwordStrength ? "filled" : ""}`} />
                 ))}
               </div>
             </div>
           )}
-          {errors.password && <span id="passwordError" className="error" aria-live="polite">{errors.password}</span>}
+          {errors.password && <span className="error">{errors.password}</span>}
 
+          {/* Confirm Password */}
           <label htmlFor="confirmPassword">Confirm Password</label>
           <input
             type={showPassword ? "text" : "password"}
             name="confirmPassword"
             id="confirmPassword"
             value={values.confirmPassword}
+            className={`password-input-with-bg ${errors.confirmPassword ? "error-input" : ""}`}
             onChange={handleChange}
             placeholder="Confirm Your Password"
-            className={errors.confirmPassword ? "error-input" : ""}
-            aria-invalid={!!errors.confirmPassword}
-            aria-describedby={errors.confirmPassword ? "confirmPasswordError" : undefined}
             required
           />
-          {errors.confirmPassword && <span id="confirmPasswordError" className="error" aria-live="polite">{errors.confirmPassword}</span>}
+          {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
 
           <button type="submit" disabled={isLoading}>
             {isLoading ? "Creating Account..." : "Create an account"}
           </button>
         </form>
-        <p>Already have an account? <a href="/login">Login</a></p>
+
+        <p>
+          Already have an account? <a href="/login">Login</a>
+        </p>
       </div>
     </div>
   );
