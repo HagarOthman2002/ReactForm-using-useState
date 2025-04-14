@@ -2,55 +2,79 @@ import backgroundImg from "../Public/background.png";
 import Logo from "../Public/Logo.png";
 import "./SignUp.css";
 
-import { useState } from "react";
+import { useReducer, useState } from "react";
 
-export default function SignUp() {
-  const [values, setValues] = useState({
+// Reducer Initial State
+const initialState = {
+  values: {
     email: "",
     name: "",
     phone: "",
     birthday: "",
     password: "",
     confirmPassword: "",
-  });
-
-  const [errors, setErrors] = useState({
+  },
+  errors: {
     email: "",
     name: "",
     phone: "",
     birthday: "",
     password: "",
     confirmPassword: "",
-  });
+  },
+  showPassword: false,
+};
 
+// Reducer Function
+function formReducer(state, action) {
+  switch (action.type) {
+    case "SET_VALUE":
+      return {
+        ...state,
+        values: { ...state.values, [action.field]: action.payload },
+        errors: { ...state.errors, [action.field]: "" }, // Clear error
+      };
+    case "SET_ERROR":
+      return {
+        ...state,
+        errors: { ...state.errors, [action.field]: action.payload },
+      };
+    case "SET_ERRORS":
+      return {
+        ...state,
+        errors: action.payload,
+      };
+    case "TOGGLE_PASSWORD":
+      return {
+        ...state,
+        showPassword: !state.showPassword,
+      };
+    case "RESET":
+      return initialState;
+    default:
+      return state;
+  }
+}
+
+export default function SignUp({ onSwitchToLogin }) {
+  const [state, dispatch] = useReducer(formReducer, initialState);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
-  const validateEmail = (email) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
+  const { values, errors, showPassword } = state;
 
-  const validatePhone = (phone) => {
-    const re = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
-    return re.test(phone);
-  };
+  const validateEmail = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const validatePassword = (password) => {
-    return /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(password);
-  };
+  const validatePhone = (phone) =>
+    /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/.test(phone);
+
+  const validatePassword = (password) =>
+    /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(password);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
-
-    if (errors[name]) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    }
+    dispatch({ type: "SET_VALUE", field: name, payload: value });
   };
 
   const calculatePasswordStrength = (password) => {
@@ -99,11 +123,9 @@ export default function SignUp() {
       const today = new Date();
       let age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
-
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
         age--;
       }
-
       if (age < 13) {
         newErrors.birthday = "You must be at least 13 years old";
         isValid = false;
@@ -127,7 +149,7 @@ export default function SignUp() {
       isValid = false;
     }
 
-    setErrors(newErrors);
+    dispatch({ type: "SET_ERRORS", payload: newErrors });
     return isValid;
   };
 
@@ -142,19 +164,11 @@ export default function SignUp() {
         confirmPassword: "***",
       });
 
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise((res) => setTimeout(res, 1500));
 
       setIsSubmitted(true);
       setIsLoading(false);
-
-      setValues({
-        email: "",
-        name: "",
-        phone: "",
-        birthday: "",
-        password: "",
-        confirmPassword: "",
-      });
+      dispatch({ type: "RESET" });
 
       setTimeout(() => setIsSubmitted(false), 3000);
     } else {
@@ -173,14 +187,13 @@ export default function SignUp() {
 
       <div className="signUp">
         <div className="header">
-          <img src={Logo} alt="Company Logo" aria-hidden="true" />
+          <img src={Logo} alt="Company Logo" />
           <h3>Create an account</h3>
         </div>
 
         {isSubmitted && <div className="success-message">Account created successfully!</div>}
 
         <form onSubmit={handleSubmit} noValidate>
-          {/* Email */}
           <label htmlFor="Email">Email Address</label>
           <input
             type="email"
@@ -195,7 +208,6 @@ export default function SignUp() {
           />
           {errors.email && <span className="error">{errors.email}</span>}
 
-          {/* Name */}
           <label htmlFor="Name">Full Name</label>
           <input
             type="text"
@@ -209,7 +221,6 @@ export default function SignUp() {
           />
           {errors.name && <span className="error">{errors.name}</span>}
 
-          {/* Phone */}
           <label htmlFor="phone">Phone Number </label>
           <input
             type="tel"
@@ -223,7 +234,6 @@ export default function SignUp() {
           />
           {errors.phone && <span className="error">{errors.phone}</span>}
 
-          {/* Birthday */}
           <label htmlFor="BD">Birthday</label>
           <input
             type="date"
@@ -236,7 +246,6 @@ export default function SignUp() {
           />
           {errors.birthday && <span className="error">{errors.birthday}</span>}
 
-          {/* Password */}
           <label htmlFor="pass">Password</label>
           <input
             type={showPassword ? "text" : "password"}
@@ -248,9 +257,8 @@ export default function SignUp() {
             className={`password-input-with-bg ${errors.password ? "error-input" : ""}`}
             required
             onClick={(e) => {
-              const target = e.target;
-              const iconClicked = e.nativeEvent.offsetX > target.offsetWidth - 30;
-              if (iconClicked) setShowPassword(!showPassword);
+              const iconClicked = e.nativeEvent.offsetX > e.target.offsetWidth - 30;
+              if (iconClicked) dispatch({ type: "TOGGLE_PASSWORD" });
             }}
           />
           {values.password && (
@@ -265,7 +273,6 @@ export default function SignUp() {
           )}
           {errors.password && <span className="error">{errors.password}</span>}
 
-          {/* Confirm Password */}
           <label htmlFor="confirmPassword">Confirm Password</label>
           <input
             type={showPassword ? "text" : "password"}
@@ -279,13 +286,18 @@ export default function SignUp() {
           />
           {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
 
-          <button type="submit" disabled={isLoading}>
+          <button className="submit" type="submit" disabled={isLoading}>
             {isLoading ? "Creating Account..." : "Create an account"}
           </button>
         </form>
 
         <p>
-          Already have an account? <a href="/login">Login</a>
+          Already have an account?<a href="#" onClick={(e) => {
+          e.preventDefault();
+          onSwitchToLogin();
+        }}>
+          Login
+        </a>
         </p>
       </div>
     </div>

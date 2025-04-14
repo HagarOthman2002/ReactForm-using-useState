@@ -127,3 +127,44 @@ form input {
 
   color: black;
 }
+
+/*media/
+/* Add this media query at the end of your CSS file */
+@media (max-width: 1024px) { /* Adjust breakpoint as needed */
+
+  
+  .bg-image {
+    display: none; /* Hide the background image on small screens */
+  }
+  
+  .Login {
+    width: 100%;
+    margin-right: 0;
+    border-radius: 0;
+    height: 100vh;
+    box-shadow: none;
+  }
+  
+  /* Optional: Adjust padding for smaller screens */
+  .Login {
+    padding: 20px;
+  }
+  
+  /* Optional: Make form inputs slightly larger for mobile */
+  form input {
+    padding: 12px;
+  }
+}
+@media (min-width: 1900px) {
+  .Login {
+    height: 100vh;
+   
+
+  
+  }
+  
+  .bg-image {
+    width: calc(100% - 700px); /* Image takes remaining space */
+  }
+}
+
