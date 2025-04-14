@@ -295,6 +295,8 @@ export default function SignUp({ onSwitchToLogin }) {
           e.preventDefault();
           onSwitchToLogin();
         }}>
+
+          
           Login
         </a>
         </p>
