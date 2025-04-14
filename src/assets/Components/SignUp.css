@@ -166,6 +166,6 @@ button:hover {
   }
   
   .background-image {
-    width: calc(100% - 700px); /* Image takes remaining space */
+    width: calc(100% - 700px); 
   }
 }

@@ -3,7 +3,7 @@ import Logo from "../Public/Logo.png";
 import "./Login.css";
 import { useReducer } from "react";
 
-// Initial state
+
 const initialState = {
   values: {
     email: "",
@@ -17,7 +17,7 @@ const initialState = {
   isSubmitted: false,
 };
 
-// Reducer function
+
 function loginReducer(state, action) {
   switch (action.type) {
     case "SET_FIELD_VALUE":
@@ -29,7 +29,7 @@ function loginReducer(state, action) {
         },
         errors: {
           ...state.errors,
-          [action.field]: "", // Clear error when typing
+          [action.field]: "",
         },
       };
     case "SET_ERRORS":
@@ -97,13 +97,13 @@ export default function Login({ onSwitchToSignUp }) {
     dispatch({ type: "SET_SUBMITTING", status: true });
 
     if (validateForm()) {
-      // Simulate form submission
+     
       setTimeout(() => {
         dispatch({ type: "SET_SUBMITTED", status: true });
         dispatch({ type: "SET_SUBMITTING", status: false });
         console.log("Login form submitted with:", values);
         
-        // Reset form after 2 seconds
+       
         setTimeout(() => {
           dispatch({ type: "RESET_FORM" });
         }, 2000);

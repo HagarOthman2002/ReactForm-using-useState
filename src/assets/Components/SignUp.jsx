@@ -4,7 +4,7 @@ import "./SignUp.css";
 
 import { useReducer, useState } from "react";
 
-// Reducer Initial State
+
 const initialState = {
   values: {
     email: "",
@@ -25,7 +25,6 @@ const initialState = {
   showPassword: false,
 };
 
-// Reducer Function
 function formReducer(state, action) {
   switch (action.type) {
     case "SET_VALUE":
